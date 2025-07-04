@@ -20,7 +20,8 @@ if uploaded_image:
     with st.spinner("Generating recipe..."):
         recipe = generate_recipe(dish, diet, cuisine, cook_time)
     st.subheader("📋 Ingredients & Instructions")
-    st.text_area("Here's your recipe:", recipe, height=350)
+    st.markdown(recipe, unsafe_allow_html=True)
+
 
 
 

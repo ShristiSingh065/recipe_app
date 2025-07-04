@@ -1,16 +1,14 @@
-from transformers import AutoProcessor, AutoModelForImageClassification, pipeline
+from transformers import AutoProcessor, AutoModelForImageClassification
 from PIL import Image
 import torch
+import pandas as pd
 
+recipe_df = pd.read_csv("data/recipe_dataset_200_final.csv")
 
-def load_classification_model():
-    processor = AutoProcessor.from_pretrained("Shresthadev403/food-image-classification")
-    model = AutoModelForImageClassification.from_pretrained("Shresthadev403/food-image-classification")
-    return processor, model
-def load_text_generator():
-    return pipeline("text2text-generation", model="google/flan-t5-small")
-processor, model = load_classification_model()
-text_generator = load_text_generator()
+processor = AutoProcessor.from_pretrained("Shresthadev403/food-image-classification")
+model = AutoModelForImageClassification.from_pretrained("Shresthadev403/food-image-classification")
+   
+
 
 def predict_dish(image: Image.Image):
     image = Image.open(image).convert("RGB")
@@ -24,21 +22,26 @@ def predict_dish(image: Image.Image):
 
 
 def generate_recipe(dish, diet=None, cuisine=None, cook_time=None):
-    filters = []
+    dish = dish.lower().replace("_", " ").strip()
+    filtered_df = recipe_df[recipe_df['dish'].str.lower() == dish]
     if diet and diet != "Any":
-        filters.append(f"{diet} diet")
+        filtered_df = filtered_df[filtered_df['diet'].str.lower() == diet.lower()]
     if cuisine and cuisine != "Any":
-        filters.append(f"{cuisine} cuisine")
+        filtered_df = filtered_df[filtered_df['cuisine'].str.lower() == cuisine.lower()]
     if cook_time and cook_time != "Any":
-        filters.append(f"ready in {cook_time}")
+        if cook_time == "<15 mins":
+            filtered_df = filtered_df[filtered_df['cook_time'] <= 15]
+        elif cook_time == "15-30 mins":
+            filtered_df = filtered_df[(filtered_df['cook_time'] > 15) & (filtered_df['cook_time'] <= 30)]
+        elif cook_time == ">30 mins":
+            filtered_df = filtered_df[filtered_df['cook_time'] > 30]
 
-    filter_text = ", ".join(filters)
+    if filtered_df.empty:
+        return "Sorry, no recipe found with the selected filters."
+
+    recipe = filtered_df.iloc[0]
+    return f"🍽️ **Dish**: {recipe['dish']}\n\n" + \
+           f"📋 **Ingredients**:\n{recipe['ingredients']}\n\n" + \
+           f"👨‍🍳 **Instructions**:\n{recipe['instructions']}"
     
-    prompt = f"""
-    Create a step-by-step recipe for {dish}.
-    Include:
-    - Ingredients with quantities
-    - Step-by-step instructions cooking steps
-    Make sure it's a {filter_text} recipe."""
-    result = text_generator(prompt.strip(), max_length=256, do_sample=False)[0]['generated_text']
-    return result
+    
