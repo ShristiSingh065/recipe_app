@@ -21,17 +21,21 @@ def predict_dish(image: Image.Image):
 
 
 def generate_recipe(dish, diet=None, cuisine=None, cook_time=None):
-    prompt = f"Recipe for {dish}"
     filters = []
     if diet and diet != "Any":
-        filters.append(diet)
+        filters.append(f"{diet} diet")
     if cuisine and cuisine != "Any":
-        filters.append(cuisine)
+        filters.append(f"{cuisine} cuisine")
     if cook_time and cook_time != "Any":
         filters.append(f"ready in {cook_time}")
-    filter_text = ", ".join(filters)
-    prompt = f"generate a {filter_text} recipe for {dish}" if filter_text else f"generate recipe: {dish}"
 
-    result = text_generator(prompt, max_length=300, do_sample=True)[0]['generated_text']
-    return result
+    filter_text = ", ".join(filters)
     
+    prompt = f"""
+    Create a detailed recipe for {dish}.
+    Include:
+    - Ingredients with quantities
+    - Step-by-step instructions
+    Make sure it's a {filter_text} recipe."""
+    result = text_generator(prompt.strip(), max_length=400, do_sample=True)[0]['generated_text']
+    return result
