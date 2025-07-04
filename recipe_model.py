@@ -1,6 +1,6 @@
 from transformers import AutoProcessor, AutoModelForImageClassification, pipeline
 from PIL import Image
-import streamlit as st
+#import streamlit as st
 
 
 processor = AutoProcessor.from_pretrained("Shresthadev403/food-image-classification")
@@ -31,7 +31,7 @@ def generate_recipe(dish, diet=None, cuisine=None, cook_time=None):
     result = text_generator(prompt, max_length=300, do_sample=True)[0]['generated_text']
     return result
 
-with st.sidebar:
+#with st.sidebar:
     st.header("History")
     for idx, rec in enumerate(st.session_state.get("history", [])):
          if st.button(f"🔄  {rec['title']}", key=f"hist_{idx}"):
