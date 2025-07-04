@@ -1,19 +1,24 @@
 from transformers import AutoProcessor, AutoModelForImageClassification, pipeline
 from PIL import Image
+import torch
 
 
 processor = AutoProcessor.from_pretrained("Shresthadev403/food-image-classification")
 model = AutoModelForImageClassification.from_pretrained("Shresthadev403/food-image-classification")
 
 # Text generator for recipe
-generator = pipeline("image-classification", model="nateraw/food101")
+#generator = pipeline("image-classification", model="nateraw/food101")
 text_generator = pipeline("text2text-generation", model="flax-community/t5-recipe-generation")
 def predict_dish(image: Image.Image):
-
     image = Image.open(image).convert("RGB")
-    predictions = generator(image)
-    top_prediction = predictions[0]['label'].replace(" ", "_")
-    return top_prediction.lower()
+    inputs = processor(images=image, return_tensors="pt")
+    with torch.no_grad():
+        outputs = model(**inputs)
+    logits = outputs.logits
+    predicted_class_idx = logits.argmax(-1).item()
+    label = model.config.id2label[predicted_class_idx]
+    return label.lower().replace(" ", "_")
+
 
 def generate_recipe(dish, diet=None, cuisine=None, cook_time=None):
     prompt = f"Recipe for {dish}"
