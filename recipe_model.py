@@ -8,7 +8,7 @@ model = AutoModelForImageClassification.from_pretrained("Shresthadev403/food-ima
 
 # Text generator for recipe
 #generator = pipeline("image-classification", model="nateraw/food101")
-text_generator = pipeline("text2text-generation", model="flax-community/t5-recipe-generation")
+text_generator = pipeline("text2text-generation", model="google/flan-t5-small")
 def predict_dish(image: Image.Image):
     image = Image.open(image).convert("RGB")
     inputs = processor(images=image, return_tensors="pt")
