@@ -1,27 +1,30 @@
 from transformers import AutoProcessor, AutoModelForImageClassification, pipeline
 from PIL import Image
 
-# 🔄 Use lightweight 85 MB food classifier
+
 processor = AutoProcessor.from_pretrained("Shresthadev403/food-image-classification")
 model = AutoModelForImageClassification.from_pretrained("Shresthadev403/food-image-classification")
 
 # Text generator for recipe
-generator = pipeline("text-generation", model="distilgpt2")
-
+generator = pipeline("image-classification", model="julien-c/food101")
+text_generator = pipeline("text2text-generation", model="mrm8488/t5-base-finetuned-recipe-generation")
 def predict_dish(image: Image.Image):
-    inputs = processor(images=image, return_tensors="pt")
-    outputs = model(**inputs)
-    idx = outputs.logits.argmax(-1).item()
-    return model.config.id2label[idx]
+    image = Image.open(image).convert("RGB")
+    predictions = generator(image)
+    top_prediction = predictions[0]['label'].replace(" ", "_")
+    return top_prediction.lower()
 
 def generate_recipe(dish, diet=None, cuisine=None, cook_time=None):
-    prompt = f"Recipe for {dish}"
-    if diet:
-        prompt += f", suitable for {diet}"
-    if cuisine:
-        prompt += f", in {cuisine} cuisine style"
-    if cook_time:
-        prompt += f", can be cooked in {cook_time}"
-    prompt += ":"
-    res = generator(prompt, max_length=150, temperature=0.7, do_sample=True)
-    return res[0]["generated_text"]
+    filters = []
+    if diet and diet != "Any":
+        filters.append(diet)
+    if cuisine and cuisine != "Any":
+        filters.append(cuisine)
+    if cook_time and cook_time != "Any":
+        filters.append(f"ready in {cook_time}")
+    filter_text = ", ".join(filters)
+    prompt = f"generate a {filter_text} recipe for {dish}" if filter_text else f"generate recipe: {dish}"
+
+    result = text_generator(prompt, max_length=300, do_sample=True)[0]['generated_text']
+    return result
+    
