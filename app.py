@@ -7,7 +7,7 @@ st.title("👨‍🍳 AI Recipe Chef")
 st.write("Upload any food image and get a real AI-generated recipe with filters.")
 
 uploaded_image = st.file_uploader("Upload food image", type=["jpg", "jpeg", "png"])
-st.sidebar.title("🔍 Filters")
+st.sidebar.title("🔍History")
 diet = st.selectbox("Dietary Preference", ["vegetarian", "non-vegetarian"])
 cuisine = st.selectbox("Cuisine", ["Indian", "Chinese", "Italian", "Mexican"])
 cook_time = st.selectbox("Cook Time", ["<15 mins", "15-30 mins", ">30 mins"])

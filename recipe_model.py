@@ -3,12 +3,15 @@ from PIL import Image
 import torch
 
 
-processor = AutoProcessor.from_pretrained("Shresthadev403/food-image-classification")
-model = AutoModelForImageClassification.from_pretrained("Shresthadev403/food-image-classification")
+def load_classification_model():
+    processor = AutoProcessor.from_pretrained("Shresthadev403/food-image-classification")
+    model = AutoModelForImageClassification.from_pretrained("Shresthadev403/food-image-classification")
+    return processor, model
+def load_text_generator():
+    return pipeline("text2text-generation", model="flax-community/t5-recipe-generation")
+processor, model = load_classification_model()
+text_generator = load_text_generator()
 
-# Text generator for recipe
-#generator = pipeline("image-classification", model="nateraw/food101")
-text_generator = pipeline("text2text-generation", model="google/flan-t5-small")
 def predict_dish(image: Image.Image):
     image = Image.open(image).convert("RGB")
     inputs = processor(images=image, return_tensors="pt")
@@ -32,10 +35,10 @@ def generate_recipe(dish, diet=None, cuisine=None, cook_time=None):
     filter_text = ", ".join(filters)
     
     prompt = f"""
-    Create a detailed recipe for {dish}.
+    Create a step-by-step recipe for {dish}.
     Include:
     - Ingredients with quantities
-    - Step-by-step instructions
+    - Step-by-step instructions cooking steps
     Make sure it's a {filter_text} recipe."""
-    result = text_generator(prompt.strip(), max_length=400, do_sample=True)[0]['generated_text']
+    result = text_generator(prompt.strip(), max_length=256, do_sample=False)[0]['generated_text']
     return result
