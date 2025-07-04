@@ -22,6 +22,9 @@ if uploaded_image:
     st.subheader("📋 Ingredients & Instructions")
     st.text_area("Here's your recipe:", recipe, height=350)
 
+
+
+
 # ---------- tiny helper to colour the diet tag ----------
 def diet_badge(diet: str) -> str:
     colors = {
