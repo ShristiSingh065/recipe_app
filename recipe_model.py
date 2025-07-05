@@ -8,7 +8,7 @@ def load_classification_model():
     model = AutoModelForImageClassification.from_pretrained("Shresthadev403/food-image-classification")
     return processor, model
 def load_text_generator():
-    return pipeline( "text2text-generation",model="distilgpt2")
+    return pipeline( "text2text-generation",model="FraBle/python-recipes-gpt2")
 processor, model = load_classification_model()
 text_generator = load_text_generator()
 
@@ -40,12 +40,8 @@ def generate_recipe(dish, diet=None, cuisine=None, cook_time=None):
         filters.append(f"ready in {cook_time}")
         filter_text = ", ".join(filters)
     
-    prompt = f"""
-    Create a step-by-step recipe for {dish}.
-    Include:
-    - Ingredients with quantities
-    - Step-by-step instructions cooking steps
-    Make sure it's a {filter_text} recipe."""
+    prompt = f"Title: {dish.replace('_', ' ').title()}\nIngredients:"
+
     try:
         result = text_generator(prompt.strip(), max_length=282, do_sample=False)
         return result[0]['generated_text']
