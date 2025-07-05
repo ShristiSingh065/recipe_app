@@ -9,8 +9,11 @@ def load_classification_model():
     model = AutoModelForImageClassification.from_pretrained("Shresthadev403/food-image-classification")
     return processor, model
 def load_text_generator():
-    print("🔁 Loading T5 model...")
-    return pipeline("text2text-generation", model="zphang/t5-small-fr-en")
+    return pipeline(
+        "text2text-generation",
+        model="flax-community/t5-recipe-generation",
+        device=-1  # Force CPU (if CUDA fails silently)
+    )
 processor, model = load_classification_model()
 text_generator = load_text_generator()
 
