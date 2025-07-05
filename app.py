@@ -3,8 +3,8 @@ from PIL import Image
 from recipe_model import predict_dish, generate_recipe
 
 st.set_page_config(page_title="AI Recipe Chef", layout="centered", page_icon="🍳")
-st.title("👨‍🍳 AI Recipe Chef")
-st.write("Upload any food image and get a real AI-generated recipe with filters.")
+#st.title("👨‍🍳 AI Recipe Chef")
+#st.write("Upload any food image and get a real AI-generated recipe with filters.")
 st.markdown(
     "<h1 style='text-align: center; color: #F63366;'>👨‍🍳 AI Recipe Chef</h1>",
     unsafe_allow_html=True
