@@ -8,9 +8,11 @@ st.write("Upload any food image and get a real AI-generated recipe with filters.
 
 uploaded_image = st.file_uploader("Upload food image", type=["jpg", "jpeg", "png"])
 st.sidebar.title("🔍History")
-diet = st.selectbox("Dietary Preference", ["vegetarian", "non-vegetarian"])
-cuisine = st.selectbox("Cuisine", ["Indian", "Chinese", "Italian", "Mexican"])
-cook_time = st.selectbox("Cook Time", ["<15 mins", "15-30 mins", ">30 mins"])
+diet = st.selectbox("Dietary Preference", [
+    "Any", "Vegetarian", "Non-Vegetarian", "Keto", "Gluten-Free", "Paleo"])
+
+cuisine = st.selectbox("Cuisine", ["Any","Indian", "Chinese", "Italian", "Mexican", "Meditarrean"])
+cook_time = st.selectbox("Cook Time", ["<15 mins", "15-30 mins", ">30 mins","1 hour"])
 
 if uploaded_image:
     with st.spinner("Detecting dish..."):

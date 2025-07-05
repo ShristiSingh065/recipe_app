@@ -12,7 +12,7 @@ def load_text_generator():
     return pipeline("text2text-generation", model="flax-community/t5-recipe-generation")
 processor, model = load_classification_model()
 text_generator = load_text_generator()
-recipe_df = pd.read_csv("data/recipe_dataset_200_final.csv")
+
 
 def predict_dish(image: Image.Image):
     image = Image.open(image).convert("RGB")
@@ -26,12 +26,6 @@ def predict_dish(image: Image.Image):
 
 
 def generate_recipe(dish, diet=None, cuisine=None, cook_time=None):
-    match = recipe_df[recipe_df['dish'].str.lower() == dish.lower()]
-    if not match.empty:
-        row = match.iloc[0]
-        ingredients = row['ingredients']
-        instructions = row['instructions']
-        return f"**Ingredients:**\n{ingredients}\n\n**Instructions:**\n{instructions}"
     filters = []
     if diet and diet != "Any":
         filters.append(f"{diet} diet")
