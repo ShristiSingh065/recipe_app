@@ -11,8 +11,8 @@ def load_classification_model():
 def load_text_generator():
     return pipeline(
         "text2text-generation",
-        model="flax-community/t5-recipe-generation",
-        device=-1  # Force CPU (if CUDA fails silently)
+        model="GaganBhatia/recipe-generator-v1",
+        device=-1  
     )
 processor, model = load_classification_model()
 text_generator = load_text_generator()
@@ -47,7 +47,7 @@ def generate_recipe(dish, diet=None, cuisine=None, cook_time=None):
     - Step-by-step instructions cooking steps
     Make sure it's a {filter_text} recipe."""
     try:
-        result = text_generator(prompt.strip(), max_length=312, do_sample=False)
+        result = text_generator(prompt.strip(), max_length=252, do_sample=False,temperature=0.7)
         return result[0]['generated_text']
     except Exception as e:
         print(f"❌ Error generating recipe: {e}")
