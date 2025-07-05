@@ -30,7 +30,7 @@ def predict_dish(image: Image.Image):
 
 
 def generate_recipe(dish, diet=None, cuisine=None, cook_time=None):
-    
+
     filters = []
     if diet and diet != "Any":
         filters.append(f"{diet} diet")
@@ -38,8 +38,7 @@ def generate_recipe(dish, diet=None, cuisine=None, cook_time=None):
         filters.append(f"{cuisine} cuisine")
     if cook_time and cook_time != "Any":
         filters.append(f"ready in {cook_time}")
-
-    filter_text = ", ".join(filters)
+        filter_text = ", ".join(filters)
     
     prompt = f"""
     Create a step-by-step recipe for {dish}.
