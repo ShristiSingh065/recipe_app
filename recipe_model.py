@@ -81,7 +81,8 @@ def predict_dish(image: Image.Image):
 
 # --- Hugging Face API Call for Recipe Generation ---
 API_URL = "https://api-inference.huggingface.co/models/GaganBhatia/recipe-generator-v1"
-headers = ("Authorization": "Bearer" {HF_TOKEN} ) # Replace this token
+headers = {"Authorization": f"Bearer {HF_TOKEN}"}
+ # Replace this token
 
 def generate_recipe(dish, diet=None, cuisine=None, cook_time=None):
     filters = []
