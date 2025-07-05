@@ -9,6 +9,7 @@ def load_classification_model():
     model = AutoModelForImageClassification.from_pretrained("Shresthadev403/food-image-classification")
     return processor, model
 def load_text_generator():
+    print("🔁 Loading T5 model...")
     return pipeline("text2text-generation", model="flax-community/t5-recipe-generation")
 processor, model = load_classification_model()
 text_generator = load_text_generator()
@@ -42,5 +43,9 @@ def generate_recipe(dish, diet=None, cuisine=None, cook_time=None):
     - Ingredients with quantities
     - Step-by-step instructions cooking steps
     Make sure it's a {filter_text} recipe."""
-    result = text_generator(prompt.strip(), max_length=256, do_sample=False)[0]['generated_text']
-    return result
+    try:
+        result = text_generator(prompt.strip(), max_length=512, do_sample=False)
+        return result[0]['generated_text']
+    except Exception as e:
+        print(f"❌ Error generating recipe: {e}")
+        return "Sorry, couldn't generate a recipe at the moment."
