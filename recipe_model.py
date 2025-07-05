@@ -1,8 +1,6 @@
 from transformers import AutoProcessor, AutoModelForImageClassification, pipeline
 from PIL import Image
 import torch
-import pandas as pd
-
 
 
 def load_classification_model():
@@ -10,21 +8,25 @@ def load_classification_model():
     model = AutoModelForImageClassification.from_pretrained("Shresthadev403/food-image-classification")
     return processor, model
 def load_text_generator():
-    return pipeline(
-        "text2text-generation",model="GaganBhatia/recipe-generator-v1")
+    return pipeline( "text2text-generation",model="GaganBhatia/recipe-generator-v1")
 processor, model = load_classification_model()
 text_generator = load_text_generator()
 
 
 def predict_dish(image: Image.Image):
-    image = Image.open(image).convert("RGB")
-    inputs = processor(images=image, return_tensors="pt")
-    with torch.no_grad():
-        outputs = model(**inputs)
-    logits = outputs.logits
-    predicted_class_idx = logits.argmax(-1).item()
-    label = model.config.id2label[predicted_class_idx]
-    return label.lower().replace(" ", "_")
+    try:
+        image = Image.open(image).convert("RGB")
+        inputs = processor(images=image, return_tensors="pt")
+        with torch.no_grad():
+            outputs = model(**inputs)
+            logits = outputs.logits
+            predicted_class_idx = logits.argmax(-1).item()
+            label = model.config.id2label[predicted_class_idx]
+            return label.lower().replace(" ", "_")
+    except Exception as e:
+        print(f"❌ Error in dish prediction: {e}")
+        return "unknown_dish"
+
 
 
 def generate_recipe(dish, diet=None, cuisine=None, cook_time=None):

@@ -3,9 +3,13 @@ from PIL import Image
 from recipe_model import predict_dish, generate_recipe
 
 st.set_page_config(page_title="AI Recipe Chef", layout="centered", page_icon="🍳")
-st.title("👨‍🍳 AI Recipe Chef")
-st.write("Upload any food image and get a real AI-generated recipe with filters.")
-
+#st.title("👨‍🍳 AI Recipe Chef")
+#st.write("Upload any food image and get a real AI-generated recipe with filters.")
+st.markdown(
+    "<h1 style='text-align: center; color: #F63366;'>👨‍🍳 AI Recipe Chef</h1>",
+    unsafe_allow_html=True
+)
+st.markdown("<p style='text-align: center;'>Upload a food image and get a personalized recipe with filters!</p>", unsafe_allow_html=True)
 uploaded_image = st.file_uploader("Upload food image", type=["jpg", "jpeg", "png"])
 st.sidebar.title("🔍History")
 diet = st.selectbox("Dietary Preference", [
@@ -15,6 +19,7 @@ cuisine = st.selectbox("Cuisine", ["Any","Indian", "Chinese", "Italian", "Mexica
 cook_time = st.selectbox("Cook Time", ["<15 mins", "15-30 mins", ">30 mins","1 hour"])
 
 if uploaded_image:
+    st.image(uploaded_image, caption="Uploaded Image", use_column_width=True)
     with st.spinner("Detecting dish..."):
         dish = predict_dish(uploaded_image)
     st.success(f"Detected Dish: {dish}")
