@@ -10,7 +10,7 @@ def load_classification_model():
     return processor, model
 def load_text_generator():
     print("🔁 Loading T5 model...")
-    return pipeline("text2text-generation", model="flax-community/t5-recipe-generation")
+    return pipeline("text2text-generation", model="zphang/t5-small-fr-en")
 processor, model = load_classification_model()
 text_generator = load_text_generator()
 
