@@ -44,7 +44,7 @@ def generate_recipe(dish, diet=None, cuisine=None, cook_time=None):
     - Step-by-step instructions cooking steps
     Make sure it's a {filter_text} recipe."""
     try:
-        result = text_generator(prompt.strip(), max_length=512, do_sample=False)
+        result = text_generator(prompt.strip(), max_length=312, do_sample=False)
         return result[0]['generated_text']
     except Exception as e:
         print(f"❌ Error generating recipe: {e}")
