@@ -20,7 +20,10 @@ if uploaded_image:
     st.success(f"Detected Dish: {dish}")
 
     with st.spinner("Generating recipe..."):
+        import time
+        time.sleep(0.8)  
         recipe = generate_recipe(dish, diet, cuisine, cook_time)
+        
     st.subheader("📋 Ingredients & Instructions")
     st.markdown(recipe, unsafe_allow_html=True)
 

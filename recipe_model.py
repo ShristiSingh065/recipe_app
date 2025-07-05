@@ -4,16 +4,14 @@ import torch
 import pandas as pd
 
 
+
 def load_classification_model():
     processor = AutoProcessor.from_pretrained("Shresthadev403/food-image-classification")
     model = AutoModelForImageClassification.from_pretrained("Shresthadev403/food-image-classification")
     return processor, model
 def load_text_generator():
     return pipeline(
-        "text2text-generation",
-        model="GaganBhatia/recipe-generator-v1",
-        device=-1  
-    )
+        "text2text-generation",model="GaganBhatia/recipe-generator-v1")
 processor, model = load_classification_model()
 text_generator = load_text_generator()
 
@@ -47,7 +45,7 @@ def generate_recipe(dish, diet=None, cuisine=None, cook_time=None):
     - Step-by-step instructions cooking steps
     Make sure it's a {filter_text} recipe."""
     try:
-        result = text_generator(prompt.strip(), max_length=252, do_sample=False,temperature=0.7)
+        result = text_generator(prompt.strip(), max_length=282, do_sample=False)
         return result[0]['generated_text']
     except Exception as e:
         print(f"❌ Error generating recipe: {e}")
