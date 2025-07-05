@@ -8,7 +8,7 @@ def load_classification_model():
     model = AutoModelForImageClassification.from_pretrained("Shresthadev403/food-image-classification")
     return processor, model
 def load_text_generator():
-    return pipeline( "text2text-generation",model="flax-community/t5-recipe-generation")
+    return pipeline( "text2text-generation",model="GaganBhatia/recipe-generator-v1")
 processor, model = load_classification_model()
 text_generator = load_text_generator()
 
