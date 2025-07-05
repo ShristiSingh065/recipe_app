@@ -110,4 +110,6 @@ def generate_recipe(dish, diet=None, cuisine=None, cook_time=None):
         return result[0]['generated_text']
     except Exception as e:
         print(f"❌ Error generating recipe: {e}")
+        print("📩 Response text:", response.text if 'response' in locals() else "No response")
+
         return "Sorry, couldn't generate the recipe right now."
