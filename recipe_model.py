@@ -1,12 +1,4 @@
-#from transformers import AutoProcessor, AutoModelForImageClassification, pipeline
-#from PIL import Image
-#import torch
 
-
-#def load_classification_model():
- #   processor = AutoProcessor.from_pretrained("Shresthadev403/food-image-classification")
-  #  model = AutoModelForImageClassification.from_pretrained("Shresthadev403/food-image-classification")
-   # return processor, model
 #def load_text_generator():
   #  return pipeline( "text2text-generation",model="distilgpt2")
 #processor, model = load_classification_model()
@@ -80,7 +72,7 @@ def predict_dish(image: Image.Image):
     return label.lower().replace(" ", "_")
 
 # --- Hugging Face API Call for Recipe Generation ---
-API_URL = "https://api-inference.huggingface.co/models/GaganBhatia/recipe-generator-v1"
+API_URL = "https://api-inference.huggingface.co/models/hoganpham/distilgpt2-finetuned-recipe-nlg-generator"
 headers = {"Authorization": f"Bearer {HF_TOKEN}"}
  # Replace this token
 
