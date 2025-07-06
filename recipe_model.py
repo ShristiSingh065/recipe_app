@@ -72,7 +72,7 @@ def predict_dish(image: Image.Image):
     return label.lower().replace(" ", "_")
 
 # --- Hugging Face API Call for Recipe Generation ---
-API_URL = "https://api-inference.huggingface.co/models/hoganpham/distilgpt2-finetuned-recipe-nlg-generator"
+API_URL = "https://api-inference.huggingface.co/models/MBZUAI/LaMini-Flan-T5-783M"
 headers = {"Authorization": f"Bearer {HF_TOKEN}"}
  # Replace this token
 
