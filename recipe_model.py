@@ -59,6 +59,7 @@ def load_classification_model():
 
 processor, model = load_classification_model()
 HF_TOKEN=st.secrets["HF_TOKEN"]
+HF_MODEL=st.secrets["HF_MODEL"]
 # Predict dish from image
 def predict_dish(image: Image.Image):
     
