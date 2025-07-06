@@ -46,7 +46,7 @@
     #    return "Sorry, couldn't generate a recipe at the moment."
 # recipe_model.py (with Hugging Face Inference API for recipe generation)
 
-from transformers import AutoProcessor, AutoModelForImageClassification,pipeline
+from transformers import AutoProcessor, AutoModelForImageClassification
 from PIL import Image
 import torch
 import requests
@@ -59,7 +59,6 @@ def load_classification_model():
 
 processor, model = load_classification_model()
 HF_TOKEN=st.secrets["HF_TOKEN"]
-HF_MODEL=st.secrets["HF_MODEL"]
 # Predict dish from image
 def predict_dish(image: Image.Image):
     
@@ -73,8 +72,9 @@ def predict_dish(image: Image.Image):
     return label.lower().replace(" ", "_")
 
 # --- Hugging Face API Call for Recipe Generation ---
-text_generator = pipeline("text-generation",model="HuggingFaceH4/zephyr-7b-beta",
-    device_map="auto",torch_dtype="auto",  )     
+API_URL = "https://api-inference.huggingface.co/models/hoganpham/distilgpt2-finetuned-recipe-nlg-generator"
+headers = {"Authorization": f"Bearer {HF_TOKEN}"}
+ # Replace this token
 
 def generate_recipe(dish, diet=None, cuisine=None, cook_time=None):
     filters = []
@@ -96,8 +96,12 @@ def generate_recipe(dish, diet=None, cuisine=None, cook_time=None):
 
     payload = {"inputs": prompt.strip()}
     try:
-        out = text_generator(prompt, max_new_tokens=200, do_sample=True, temperature=0.7)
-        return out[0]["generated_text"]
+        response = requests.post(API_URL, headers=headers, json=payload)
+        response.raise_for_status()
+        result = response.json()
+        return result[0]['generated_text']
     except Exception as e:
-        print("❌ Zephyr recipe gen failed:", e)
+        print(f"❌ Error generating recipe: {e}")
+        print("📩 Response text:", response.text if 'response' in locals() else "No response")
+
         return "Sorry, couldn't generate the recipe right now."
