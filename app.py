@@ -5,6 +5,7 @@ from transformers import (
     BlipProcessor, BlipForConditionalGeneration,
     AutoTokenizer, AutoModelForSeq2SeqLM
 )
+import re
 
 
 st.set_page_config(page_title="🍽️ AI Recipe Generator", page_icon="🍲", layout="centered")
@@ -50,21 +51,22 @@ def generate_recipe(desc):
     return t5_tokenizer.decode(outputs[0], skip_special_tokens=True)
 # Recipe parser
 def parse_recipe(text):
-    lines = text.split("\n")
-    ingredients = []
-    instructions = []
-    is_ingredient = True
+    # Normalize and lowercase the text
+    text = text.replace("\n", " ").lower()
 
-    for line in lines:
-        line = line.strip()
-        if not line:
-            continue
-        if "step" in line.lower() or "instruction" in line.lower():
-            is_ingredient = False
-        elif is_ingredient:
-            ingredients.append(line)
-        else:
-            instructions.append(line)
+    # Try to extract ingredients section
+    ingredients_match = re.search(r"ingredients?:(.*?)(instructions?:|steps?:|directions?:|step\s\d|$)", text, re.DOTALL)
+    instructions_match = re.search(r"(instructions?:|steps?:|directions?:)(.*)", text, re.DOTALL)
+
+    ingredients_text = ingredients_match.group(1).strip() if ingredients_match else ""
+    instructions_text = instructions_match.group(2).strip() if instructions_match else ""
+
+    # Break into bullet points using comma or semicolon
+    ingredients = [i.strip() for i in re.split(r",|;", ingredients_text) if len(i.strip()) > 3]
+    
+    # Split steps by common patterns
+    instructions = re.split(r"(?:step\s*\d+[:.]?|\. )", instructions_text)
+    instructions = [i.strip() for i in instructions if len(i.strip()) > 5]
 
     return ingredients, instructions
 # UI
