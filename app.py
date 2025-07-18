@@ -6,13 +6,7 @@ from transformers import (
     AutoTokenizer, AutoModelForSeq2SeqLM
 )
 
-st.set_page_config(
-    page_title="AI Recipe Generator 🍳",
-    page_icon="🍲",
-    layout="centered",
-    initial_sidebar_state="auto",
-)
-
+st.title("AI CHEF 🍳")
 
 # Load models (cached)
 @st.cache_resource
