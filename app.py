@@ -1,63 +1,49 @@
 import streamlit as st
 from PIL import Image
-from recipe_model import predict_dish, generate_recipe
-
-st.set_page_config(page_title="AI Recipe Chef", layout="centered", page_icon="🍳")
-#st.title("👨‍🍳 AI Recipe Chef")
-#st.write("Upload any food image and get a real AI-generated recipe with filters.")
-st.markdown(
-    "<h1 style='text-align: center; color: #F63366;'>👨‍🍳 AI Recipe Chef</h1>",
-    unsafe_allow_html=True
+import torch
+from transformers import (
+    BlipProcessor, BlipForConditionalGeneration,
+    AutoTokenizer, AutoModelForSeq2SeqLM
 )
-st.markdown("<p style='text-align: center;'>Upload a food image and get a personalized recipe with filters!</p>", unsafe_allow_html=True)
-uploaded_image = st.file_uploader("Upload food image", type=["jpg", "jpeg", "png"])
-st.sidebar.title("🔍History")
-diet = st.selectbox("Dietary Preference", [
-    "Any", "Vegetarian", "Non-Vegetarian", "Keto", "Gluten-Free", "Paleo"])
 
-cuisine = st.selectbox("Cuisine", ["Any","Indian", "Chinese", "Italian", "Mexican", "Meditarrean"])
-cook_time = st.selectbox("Cook Time", ["Any","<15 mins", "15-30 mins", ">30 mins","1 hour"])
+st.title("AI CHEF 🍳")
 
-if uploaded_image:
-    st.image(uploaded_image, caption="Uploaded Image", use_column_width=True)
-    with st.spinner("Detecting dish..."):
-        dish = predict_dish(uploaded_image)
-    st.success(f"Detected Dish: {dish}")
+# Load models (cached)
+@st.cache_resource
+def load_models():
+    blip_processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+    blip_model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
+    t5_tokenizer = AutoTokenizer.from_pretrained("flax-community/t5-recipe-generation")
+    t5_model = AutoModelForSeq2SeqLM.from_pretrained("flax-community/t5-recipe-generation")
+    return blip_processor, blip_model, t5_tokenizer, t5_model
+
+blip_processor, blip_model, t5_tokenizer, t5_model = load_models()
+
+# BLIP: Get caption (description of food image)
+def get_image_caption(img):
+    inputs = blip_processor(img, return_tensors="pt")
+    out = blip_model.generate(**inputs)
+    caption = blip_processor.decode(out[0], skip_special_tokens=True)
+    return caption
+
+# T5: Generate recipe from caption
+def generate_recipe(desc):
+    prompt = f"Generate a recipe with ingredients and step-by-step instructions for: {desc}"
+    inputs = t5_tokenizer(prompt, return_tensors="pt")
+    outputs = t5_model.generate(**inputs, max_length=512)
+    return t5_tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+# UI
+uploaded_file = st.file_uploader("Upload food image 🍛", type=["jpg", "jpeg", "png"])
+
+if uploaded_file:
+    image = Image.open(uploaded_file).convert("RGB")
+    st.image(image, caption="Uploaded Image", use_column_width=True)
+
+    with st.spinner("Analyzing image..."):
+        caption = get_image_caption(image)
+    st.success(f"Detected Dish Description: **{caption}**")
 
     with st.spinner("Generating recipe..."):
-        import time
-        time.sleep(0.8)  
-        recipe = generate_recipe(dish, diet, cuisine, cook_time)
-        
-    st.subheader("📋 Ingredients & Instructions")
-    st.markdown(recipe, unsafe_allow_html=True)
-
-
-
-
-
-# ---------- tiny helper to colour the diet tag ----------
-def diet_badge(diet: str) -> str:
-    colors = {
-        "Vegetarian":   "#34c759",   # green
-        "Vegan":        "#0a84ff",   # blue
-        "Keto":         "#ff9f0a",   # orange
-        "Gluten-Free":  "#ff375f",   # pink
-        "Any":          "#8e8e93",   # grey
-    }
-    col = colors.get(diet, "#8e8e93")
-    return (
-        f"<span style='background:{col};color:white;"
-        "border-radius:4px;padding:2px 6px;font-size:0.85rem;'>"
-        f"{diet}</span>"
-    )
-#if file:
- #   img = Image.open(file)
-  #  st.image(img, caption="Your Image", use_column_width=True)
-   # with st.spinner("Thinking like a chef..."):
-    #    dish = predict_dish(img)
-     #   st.success(f"Detected Dish: **{dish}**")
-      #  recipe = generate_recipe(dish, diet, cuisine, cook_time)
-      #  st.subheader("📝 Recipe:")
-      #  st.write(recipe)
-
+        recipe = generate_recipe(caption)
+    st.text_area("📋 Recipe", recipe, height=400)
