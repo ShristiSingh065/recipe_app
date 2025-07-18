@@ -55,13 +55,6 @@ with col1:
         image = Image.open(uploaded_file).convert("RGB")
         st.image(image, caption="Uploaded Image", use_column_width=True)
 
-with col2:
-    st.write("### How to use")
-    st.write("""
-    1. Upload a clear food image.
-    2. Wait for AI to detect & generate recipe.
-    3. Enjoy your cooking!
-    """)
 
 # Load models (cached)
 @st.cache_resource
