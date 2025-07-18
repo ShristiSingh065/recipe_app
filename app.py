@@ -34,6 +34,7 @@ def get_image_caption(img):
     caption = blip_processor.decode(out[0], skip_special_tokens=True)
     return caption
 
+
 # T5: Generate recipe from caption
 def generate_recipe(desc):
     prompt = f"Generate a recipe with ingredients and step-by-step instructions for: {desc}"
@@ -47,7 +48,25 @@ def generate_recipe(desc):
         repetition_penalty=2.0
     )
     return t5_tokenizer.decode(outputs[0], skip_special_tokens=True)
+# Recipe parser
+def parse_recipe(text):
+    lines = text.split("\n")
+    ingredients = []
+    instructions = []
+    is_ingredient = True
 
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        if "step" in line.lower() or "instruction" in line.lower():
+            is_ingredient = False
+        elif is_ingredient:
+            ingredients.append(line)
+        else:
+            instructions.append(line)
+
+    return ingredients, instructions
 # UI
 uploaded_file = st.file_uploader("Upload food image 🍛", type=["jpg", "jpeg", "png"])
 
@@ -59,6 +78,30 @@ if uploaded_file:
         caption = get_image_caption(image)
     st.success(f"Detected Dish Description: **{caption}**")
 
-    with st.spinner("Generating recipe..."):
+    with st.spinner("👨‍🍳 Generating recipe..."):
         recipe = generate_recipe(caption)
-    st.text_area("📋 Recipe", recipe, height=400)
+
+    # Parse into ingredients & instructions
+    ingredients, instructions = parse_recipe(recipe)
+    st.markdown(" 🧂 Ingredients")
+    if ingredients:
+        for item in ingredients:
+            st.markdown(f"- {item}")
+    else:
+        st.write("No ingredients found.")
+
+    st.markdown("### 👨‍🍳 Instructions")
+    if instructions:
+        for i, step in enumerate(instructions, 1):
+            st.markdown(f"**Step {i}:** {step}")
+    else:
+        st.write("No instructions found.")
+
+    # Optional: Download raw recipe
+    with st.expander("📄 View raw AI output"):
+        st.text_area("Raw Output", recipe, height=300)
+
+    st.download_button("⬇️ Download Recipe", data=recipe, file_name="recipe.txt", mime="text/plain")
+
+st.markdown("---")
+st.markdown("<p style='text-align: center; font-size: 0.9em; color: gray;'>Made with ❤️ using Streamlit & Transformers</p>", unsafe_allow_html=True)
