@@ -30,7 +30,14 @@ def get_image_caption(img):
 def generate_recipe(desc):
     prompt = f"Generate a recipe with ingredients and step-by-step instructions for: {desc}"
     inputs = t5_tokenizer(prompt, return_tensors="pt")
-    outputs = t5_model.generate(**inputs, max_length=512)
+    outputs = t5_model.generate(
+        **inputs,
+        max_length=512,
+        num_beams=4,
+        no_repeat_ngram_size=3,
+        early_stopping=True,
+        repetition_penalty=2.0
+    )
     return t5_tokenizer.decode(outputs[0], skip_special_tokens=True)
 
 # UI
