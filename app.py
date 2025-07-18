@@ -7,6 +7,14 @@ from transformers import (
 )
 
 st.title("AI CHEF 🍳")
+st.set_page_config(page_title="🍽️ AI Recipe Generator", page_icon="🍲", layout="centered")
+
+st.markdown(
+    "<h1 style='text-align: center; color: #ff7043;'>🧠 AI Recipe Generator</h1>",
+    unsafe_allow_html=True
+)
+st.markdown("<p style='text-align: center;'>Upload any food image & get its recipe instantly!</p>", unsafe_allow_html=True)
+st.markdown("---")
 
 # Load models (cached)
 @st.cache_resource
