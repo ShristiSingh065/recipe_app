@@ -6,7 +6,7 @@ from transformers import (
     AutoTokenizer, AutoModelForSeq2SeqLM
 )
 
-st.title("AI CHEF 🍳")
+
 st.set_page_config(page_title="🍽️ AI Recipe Generator", page_icon="🍲", layout="centered")
 
 st.markdown(
