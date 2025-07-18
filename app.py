@@ -6,7 +6,62 @@ from transformers import (
     AutoTokenizer, AutoModelForSeq2SeqLM
 )
 
-st.title("AI CHEF 🍳")
+st.set_page_config(
+    page_title="AI Recipe Generator 🍳",
+    page_icon="🍲",
+    layout="centered",
+    initial_sidebar_state="auto",
+)
+st.markdown(
+    """
+    <style>
+    .main {
+        background-color: #fff8e1;
+        color: #5a2a00;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding: 20px 50px;
+    }
+    .stButton>button {
+        background-color: #ff7043;
+        color: white;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 10px 24px;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+    .stButton>button:hover {
+        background-color: #ff5722;
+        cursor: pointer;
+    }
+    textarea {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 16px;
+        color: #4e342e;
+        background-color: #fff3e0;
+        border-radius: 12px;
+        padding: 15px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+col1, col2 = st.columns([3,1])
+
+with col1:
+    uploaded_file = st.file_uploader("Upload food image 🍛", type=["jpg","jpeg","png"])
+    if uploaded_file:
+        image = Image.open(uploaded_file).convert("RGB")
+        st.image(image, caption="Uploaded Image", use_column_width=True)
+
+with col2:
+    st.write("### How to use")
+    st.write("""
+    1. Upload a clear food image.
+    2. Wait for AI to detect & generate recipe.
+    3. Enjoy your cooking!
+    """)
 
 # Load models (cached)
 @st.cache_resource
