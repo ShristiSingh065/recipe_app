@@ -1,15 +1,11 @@
+from ultralytics import YOLO
 import streamlit as st
 from PIL import Image
 import torch
 from transformers import (
     BlipProcessor, BlipForConditionalGeneration,
-    AutoTokenizer, AutoModelForSeq2SeqLM
-)
+    AutoTokenizer, AutoModelForSeq2SeqLM)
 import re
-from ultralytics import YOLO
-from PIL import Image
-import torch
-
 
 model = YOLO("yolov8s.pt")
 
