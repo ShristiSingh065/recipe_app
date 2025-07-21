@@ -6,6 +6,26 @@ from transformers import (
     AutoTokenizer, AutoModelForSeq2SeqLM
 )
 import re
+from ultralytics import YOLO
+from PIL import Image
+import torch
+
+
+model = YOLO("yolov8s.pt")
+
+def detect_objects(image_path):
+    results = model(image_path)
+    names = model.names
+
+    
+    detections = []
+    for r in results:
+        for box in r.boxes:
+            cls_id = int(box.cls[0])
+            conf = float(box.conf[0])
+            label = f"{names[cls_id]} ({conf:.2f})"
+            detections.append(label)
+    return detections
 
 
 st.set_page_config(page_title="🍽️ AI Recipe Generator", page_icon="🍲", layout="centered")
